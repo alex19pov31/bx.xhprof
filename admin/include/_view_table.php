@@ -1,5 +1,7 @@
 <?php
 
+use \Bitrix\Main\Localization\Loc;
+
 /**
  * @var HttpRequest $request
  * @var XHProfManager $xhprofManager
@@ -11,6 +13,8 @@
  * @var Iterator $data
  * @var string $listName
  * @var string $title
+ * @var string $link_url
+ * @var string $link_title
  */
 $oSort = new CAdminSorting($listName, $keySort, $isAscending ? "asc" : 'desc');
 $adminList = new CAdminList($listName, $oSort);
@@ -18,115 +22,115 @@ $adminList = new CAdminList($listName, $oSort);
 $adminList->AddHeaders([
     [
         'id' => 'FUNC_NAME',
-        'content' => 'Имя функции/метода',
+        'content' => Loc::getMessage('name_function'),
         'sort' => 'func_name',
         'default' => true,
     ],
     [
         'id' => 'CALLS',
-        'content' => 'Количество вызовов',
+        'content' => Loc::getMessage('calls_count'),
         'sort' => 'ct',
         'default' => true,
     ],
     [
         'id' => 'CALLS_P',
-        'content' => 'Вызовы (%)',
+        'content' => Loc::getMessage('calls_percent'),
         'sort' => 'ct_p',
         'default' => true,
     ],
     [
         'id' => 'IN_TIME',
-        'content' => 'Общее время выполнения + системные ресурсы',
+        'content' => Loc::getMessage('all_time_exec'),
         'sort' => 'wt',
         'default' => true,
     ],
     [
         'id' => 'IN_TIME_P',
-        'content' => 'Общее время выполнения + системные ресурсы (%)',
+        'content' => Loc::getMessage('all_time_exec_percent'),
         'sort' => 'wt_p',
         'default' => true,
     ],
     [
         'id' => 'EX_TIME',
-        'content' => 'Время выполнения без вложенных функций + системные ресурсы',
+        'content' => Loc::getMessage('ex_time_exec'),
         'sort' => 'ext_wt',
         'default' => true,
     ],
     [
         'id' => 'EX_TIME_P',
-        'content' => 'Время выполнения без вложенных функций + системные ресурсы (%)',
+        'content' => Loc::getMessage('ex_time_exec_percent'),
         'sort' => 'ext_wt_p',
         'default' => true,
     ],
     [
         'id' => 'IN_CPU',
-        'content' => 'Общее время выполнения',
+        'content' => Loc::getMessage('time_exec'),
         'sort' => 'cpu',
         'default' => true,
     ],
     [
         'id' => 'IN_CPU_P',
-        'content' => 'Общее время выполнения (%)',
+        'content' => Loc::getMessage('time_exec_percent'),
         'sort' => 'cpu_p',
         'default' => true,
     ],
     [
         'id' => 'EX_CPU',
-        'content' => 'Время выполнения без вложенных функций',
+        'content' => Loc::getMessage('ex_time_exec'),
         'sort' => 'ext_cpu',
         'default' => true,
     ],
     [
         'id' => 'EX_CPU_P',
-        'content' => 'Общее время выполнения без вложенных функций (%)',
+        'content' => Loc::getMessage('ex_time_exec_percent'),
         'sort' => 'ext_cpu_p',
         'default' => true,
     ],
     [
         'id' => 'IN_MEM',
-        'content' => 'Использование памяти',
+        'content' => Loc::getMessage('memory_usage'),
         'sort' => 'mu',
         'default' => true,
     ],
     [
         'id' => 'IN_MEM_P',
-        'content' => 'Использование памяти (%)',
+        'content' => Loc::getMessage('memory_usage_percent'),
         'sort' => 'mu_p',
         'default' => true,
     ],
     [
         'id' => 'EX_MEM',
-        'content' => 'Использование памяти без вложенных функций',
+        'content' => Loc::getMessage('ex_memory_usage'),
         'sort' => 'ext_mu',
         'default' => true,
     ],
     [
         'id' => 'EX_MEM_P',
-        'content' => 'Использование памяти без вложенных функций (%)',
+        'content' => Loc::getMessage('ex_memory_usage_percent'),
         'sort' => 'ext_mu_p',
         'default' => true,
     ],
     [
         'id' => 'IN_PEAK_MEM',
-        'content' => 'Пиковое использование памяти',
+        'content' => Loc::getMessage('max_usage_memory'),
         'sort' => 'pmu',
         'default' => true,
     ],
     [
         'id' => 'IN_PEAK_MEM_P',
-        'content' => 'Пиковое использование памяти (%)',
+        'content' => Loc::getMessage('max_usage_memory_percent'),
         'sort' => 'pmu_p',
         'default' => true,
     ],
     [
         'id' => 'EX_PEAK_MEM',
-        'content' => 'Пиковое использование памяти без вложенных функций',
+        'content' => Loc::getMessage('ex_max_usage_memory'),
         'sort' => 'ext_pmu',
         'default' => true,
     ],
     [
         'id' => 'EX_PEAK_MEM_P',
-        'content' => 'Пиковое использование памяти без вложенных функций (%)',
+        'content' => Loc::getMessage('ex_max_usage_memory_percent'),
         'sort' => 'ext_pmu_p',
         'default' => true,
     ],
@@ -138,8 +142,8 @@ foreach ($data as $item) {
 
     $arActions = [];
     $arActions[] = array("SEPARATOR" => true);
-    $arActions[] = array("ICON"=>"delete", "TEXT"=>"Удалить", "ACTION"=>$adminList->ActionDoGroup(1, "delete"));
-    $arActions[] = array("ICON"=>"edit", "TEXT"=>"Редактировать",  "ACTION"=>$adminList->ActionRedirect("yci_resizer2_set_edit.php?id=1&action=edit&".bitrix_sessid_get()."&lang=".LANG.""));
+    $arActions[] = array("ICON"=>"delete", "TEXT"=>Loc::getMessage('delete'), "ACTION"=>$adminList->ActionDoGroup(1, "delete"));
+    $arActions[] = array("ICON"=>"edit", "TEXT"=>Loc::getMessage('edit'),  "ACTION"=>$adminList->ActionRedirect("yci_resizer2_set_edit.php?id=1&action=edit&".bitrix_sessid_get()."&lang=".LANG.""));
 
 
     $row = $adminList->AddRow(false, [
@@ -170,5 +174,8 @@ foreach ($data as $item) {
 
 $adminList->CheckListMode();
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_after.php');
+
+echo "<p><a style=\"text-decoration: none;\" href=\"{$link_url}\">{$link_title}</a></p>";
+
 echo "<h3>{$title}</h3>";
 $adminList->DisplayList();

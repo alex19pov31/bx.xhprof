@@ -4,11 +4,12 @@ use Bitrix\Main\Localization\Loc;
 Loc::loadMessages(__FILE__);
 $aMenu = array(
     array(
-        'parent_menu' => 'global_menu_content',
+        'parent_menu' => 'global_menu_services',
         'sort' => 400,
-        'text' => "Тестовый модуль",
-        'title' => "",
-        'url' => 'perfmon_table.php?lang=ru&table_name=brainkit_test'
+        'text' => "Xhprof",
+        'title' => Loc::getMessage('menu_title'),
+        'url' => 'xhprof.php?lang='.LANGUAGE_ID,
+        'icon' => 'form_menu_icon',
     ),
 );
 return $aMenu;

@@ -25,9 +25,9 @@ $keySort = $request->getQuery('by') ?? 'ct';
 $isAscending = $request->getQuery('order') === 'asc';
 
 if (!empty($runParam) && !empty($sourceParam)) {
-    require_once './include/_run_view.php';
+    require_once 'include/_run_view.php';
 } else {
-    require_once './include/_run_list.php';
+    require_once 'include/_run_list.php';
 }
 
 require($documentRoot.'/bitrix/modules/main/include/epilog_admin.php');

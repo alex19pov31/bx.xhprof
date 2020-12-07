@@ -4,6 +4,7 @@ use Bx\XHProf\AscendingData;
 use Bx\XHProf\DescendingData;
 use Bx\XHProf\XHProfManager;
 use Bitrix\Main\HttpRequest;
+use \Bitrix\Main\Localization\Loc;
 
 /**
  * @var HttpRequest $request
@@ -28,14 +29,17 @@ if (!empty($symbolParam)) {
     $sortingTable = $request->getQuery('table_id');
 
     $listName = 'xhprof_parent_list';
-    $title = "Родительские функции:";
+    $title = Loc::getMessage('parent_function');
+
+    $link_title = Loc::getMessage('back');
+    $link_url = 'javascript:history.back()';
     if (empty($sortingTable) || $sortingTable === $listName) {
         $data = $originalData->filterByChild($symbolParam);
         require '_view_table.php';
     }
 
     $listName = 'xhprof_children_list';
-    $title = "Дочерние функции:";
+    $title = Loc::getMessage('child_function');
     if (empty($sortingTable) || $sortingTable === $listName) {
         $data = $originalData->filterByParent($symbolParam);
         require '_view_table.php';
@@ -43,6 +47,9 @@ if (!empty($symbolParam)) {
 } else {
     $listName = 'xhprof_all_list';
     $data = $originalData;
-    $title = "Все вызовы:";
+
+    $title = Loc::getMessage('all_calls');
+    $link_title = Loc::getMessage('profile_list');
+    $link_url = '/bitrix/admin/xhprof.php?lang='.LANGUAGE_ID;
     require '_view_table.php';
 }

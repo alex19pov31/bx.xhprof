@@ -2,6 +2,7 @@
 
 use Bx\XHProf\XHProfManager;
 use Bitrix\Main\HttpRequest;
+use \Bitrix\Main\Localization\Loc;
 
 /**
  * @var HttpRequest $request
@@ -33,19 +34,19 @@ switch ($action) {
 $adminList->AddHeaders([
     [
         'id'        => 'RUN_ID',
-        'content'   => 'Идентификатор профайлинга',
+        'content'   => Loc::getMessage('profile_id'),
         'sort'      => 'run_id',
         'default'   => true,
     ],
     [
         'id'        => 'SOURCE',
-        'content'   => 'Источник',
+        'content'   => Loc::getMessage('source'),
         'sort'      => 'source',
         'default'   => true,
     ],
     [
         'id'        => 'DATE',
-        'content'   => 'Дата профайлинга',
+        'content'   => Loc::getMessage('date_profiling'),
         'sort'      => 'date',
         'default'   => true,
     ],
@@ -64,7 +65,7 @@ foreach ($xhprofManager->getRunsList() as $run) {
         ["SEPARATOR" => true],
         [
         "ICON" => "delete",
-        "TEXT" => "Удалить",
+        "TEXT" => Loc::getMessage('delete'),
         "ACTION" => $adminList->ActionDoGroup("{$run['run']}.{$run['source']}", "delete")
         ]
     ];
