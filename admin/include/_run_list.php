@@ -26,6 +26,7 @@ switch ($action) {
                 $type
             ] = explode('.', $rawId);
 
+            $type = base64_decode($type);
             $xhprofManager->deleteById($run, $type);
         }
         break;
@@ -60,6 +61,7 @@ foreach ($xhprofManager->getRunsList() as $run) {
      */
     $date = $run['date'];
     $link = "?run={$run['run']}&source={$run['source']}&lang=".LANG;
+    $decodedSource = base64_decode($run['source']);
 
     $arActions = [
         ["SEPARATOR" => true],
@@ -72,7 +74,7 @@ foreach ($xhprofManager->getRunsList() as $run) {
 
     $row = $adminList->AddRow(false, [
         'RUN_ID' => $run['run'],
-        'SOURCE' => $run['source'],
+        'SOURCE' => $decodedSource,
         'DATE' => $date instanceof DateTimeImmutable ? $date->format('d.m.Y H:i:s') : (string)$date,
     ], $link);
 

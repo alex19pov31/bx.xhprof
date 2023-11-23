@@ -136,8 +136,9 @@ $adminList->AddHeaders([
     ],
 ]);
 
+$encodedSourceParam = base64_encode($sourceParam);
 foreach ($data as $item) {
-    $link = "?run={$runParam}&source={$sourceParam}&symbol={$item['key']}&lang=".LANG;
+    $link = "?run={$runParam}&source={$encodedSourceParam}&symbol={$item['key']}&lang=".LANG;
 
 
     $arActions = [];

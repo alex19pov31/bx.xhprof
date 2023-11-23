@@ -30,7 +30,7 @@ class XHProfRunsDefault implements XHProfRunsInterface
      */
     private function fileName($run_id, $type): string
     {
-
+        $type = base64_encode($type);
         $file = "$run_id.$type." . $this->suffix;
 
         if (!empty($this->dir)) {

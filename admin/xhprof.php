@@ -18,7 +18,7 @@ $documentRoot = Application::getDocumentRoot();
 $xhprofManager = XHProfManager::instance();
 
 $runParam = $request->getQuery('run');
-$sourceParam = $request->getQuery('source');
+$sourceParam = base64_decode($request->getQuery('source'));
 $symbolParam = $request->getQuery('symbol');
 
 $keySort = $request->getQuery('by') ?? 'ct';
