@@ -19,15 +19,28 @@ use \Bitrix\Main\Localization\Loc;
 $runInfo = $xhprofManager->getRunById($runParam, $sourceParam);
 //$runInfo = $symbolParam ? $runInfo->filterByFucName($symbolParam) : $runInfo;
 
-/**
- * @var AscendingData|DescendingData $originalData
- */
-$originalData = $isAscending ? $runInfo->getAscByKey($keySort) : $runInfo->getDescByKey($keySort);
+//$currentElement = !empty($symbolParam) ? $runInfo->filterByFucName($symbolParam) : null;
+
 $description = $runInfo->getDescription();
 
 if (!empty($symbolParam)) {
     $sortingTable = $request->getQuery('table_id');
 
+    $listName = 'xhprof_current_list';
+    $title = Loc::getMessage('current_function');
+
+    $link_title = Loc::getMessage('back');
+    $link_url = 'javascript:history.back()';
+    if (empty($sortingTable) || $sortingTable === $listName) {
+        $data = [$runInfo->getDataByFuncName($symbolParam)];
+        require '_view_table.php';
+    }
+
+    /**
+     * @var AscendingData|DescendingData $originalData
+     */
+    $originalData = $isAscending ? $runInfo->getAscByKeyFromParent($keySort) :
+        $runInfo->getDescByKeyFromParent($keySort);
     $listName = 'xhprof_parent_list';
     $title = Loc::getMessage('parent_function');
 
@@ -38,6 +51,10 @@ if (!empty($symbolParam)) {
         require '_view_table.php';
     }
 
+    /**
+     * @var AscendingData|DescendingData $originalData
+     */
+    $originalData = $isAscending ? $runInfo->getAscByKey($keySort) : $runInfo->getDescByKey($keySort);
     $listName = 'xhprof_children_list';
     $title = Loc::getMessage('child_function');
     if (empty($sortingTable) || $sortingTable === $listName) {
@@ -45,11 +62,17 @@ if (!empty($symbolParam)) {
         require '_view_table.php';
     }
 } else {
+    /**
+     * @var AscendingData|DescendingData $originalData
+     */
+    $originalData = $isAscending ? $runInfo->getAscByKey($keySort) : $runInfo->getDescByKey($keySort);
     $listName = 'xhprof_all_list';
     $data = $originalData;
 
     $title = Loc::getMessage('all_calls');
     $link_title = Loc::getMessage('profile_list');
     $link_url = '/bitrix/admin/xhprof.php?lang='.LANGUAGE_ID;
+
+    $totalData = $runInfo->getTotalData();
     require '_view_table.php';
 }

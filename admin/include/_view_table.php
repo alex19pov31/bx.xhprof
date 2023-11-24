@@ -179,4 +179,8 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admi
 echo "<p><a style=\"text-decoration: none;\" href=\"{$link_url}\">{$link_title}</a></p>";
 
 echo "<h3>{$title}</h3>";
+if (!empty($totalData)) {
+    require '_total_data.php';
+}
+
 $adminList->DisplayList();

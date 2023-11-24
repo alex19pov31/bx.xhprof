@@ -2,6 +2,7 @@
 $MESS['profile_id'] = 'Идентификатор профайлинга';
 $MESS['source'] = 'Источник';
 $MESS['date_profiling'] = 'Дата профайлинга';
+$MESS['current_function'] = 'Текущая функция:';
 $MESS['parent_function'] = 'Родительские функции:';
 $MESS['child_function'] = 'Дочерние функции:';
 $MESS['all_calls'] = 'Все вызовы:';

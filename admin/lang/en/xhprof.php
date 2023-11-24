@@ -2,6 +2,7 @@
 $MESS['profile_id'] = "Profiling ID";
 $MESS['source'] = "Source";
 $MESS['date_profiling'] = "Profiling date";
+$MESS['current_function'] = 'Current function:';
 $MESS['parent_function'] = "Parent functions:";
 $MESS['child_function'] = "Child functions:";
 $MESS['all_calls'] = "All calls:";

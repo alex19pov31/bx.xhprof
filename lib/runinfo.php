@@ -72,9 +72,10 @@ class RunInfo implements RunInfoInterface
                     continue;
                 }
 
-                $item["{$k}_p"] = ($item[$k]/$allSum[$k]) * 100;
+
+                $item["{$k}_p"] = $allSum[$k] > 0 ? (($item[$k]/$allSum[$k]) * 100) : 0;
                 $item["ext_{$k}"] = ($value - $item['child'][$k]) ?? 0;
-                $item["ext_{$k}_p"] = ($item["ext_{$k}"]/$allSum[$k]) * 100;
+                $item["ext_{$k}_p"] = $allSum[$k] > 0 ? (($item["ext_{$k}"]/$allSum[$k]) * 100) : 0;
             }
 
             if (isset($item['child'])) {
@@ -101,6 +102,15 @@ class RunInfo implements RunInfoInterface
         return $this->description;
     }
 
+    public function getDataByFuncName(string $funcName): array
+    {
+        $result = $this->groupData[$funcName] ?: [];
+        if (!empty($result)) {
+            $result['key'] = $funcName;
+        }
+        return $result;
+    }
+
     /**
      * @param string $funcName
      * @return RunInfoInterface|null
@@ -116,7 +126,7 @@ class RunInfo implements RunInfoInterface
                 ] = explode('==>', $key);
 
                 $currentFunc = trim($current ?? $parent);
-                return trim($funcName) === trim($parent);
+                return trim($funcName) === $currentFunc;
             });
 
         return new static($data, $this->description);
@@ -130,5 +140,52 @@ class RunInfo implements RunInfoInterface
     public function getDescByKey(string $key): SplMaxHeap
     {
         return new DescendingData($key, $this->groupData);
+    }
+
+    public function getAscByKeyFromParent(string $key): SplMinHeap
+    {
+        return new AscendingData($key, $this->getGroupedDataFromParent());
+    }
+
+    public function getDescByKeyFromParent(string $key): SplMaxHeap
+    {
+        return new DescendingData($key, $this->getGroupedDataFromParent());
+    }
+
+    public function getTotalData(): array
+    {
+        $result = [];
+        foreach ($this->data as $item) {
+            foreach ($item as $k => $value) {
+                if (!array_key_exists($k, $result)){
+                    $result[$k] = 0;
+                }
+                $result[$k] += (int) $value;
+            }
+        }
+        return $result;
+    }
+
+    private function getGroupedDataFromParent(): array
+    {
+        $result = [];
+        foreach ($this->data as $key => $item) {
+            [
+                $parent,
+                $current
+            ] = explode('==>', $key);
+            $item['parent'] = $parent;
+            $item['key'] = $parent;
+            $item['child_name'] = [$current];
+
+            foreach ($item as $k => $value) {
+                $value = (int) $value;
+                $totalValue = (int) ($this->groupData[$current][$k] ?? 0);
+                $item["{$k}_p"] = $totalValue > 0 ? (($value/$totalValue) * 100) : 0;
+            }
+            $result[$key] = $item;
+        }
+
+        return $result;
     }
 }

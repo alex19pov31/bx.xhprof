@@ -17,7 +17,9 @@ class DescendingData extends SplMaxHeap
     {
         $this->key = $key;
         foreach ($data as $k => $value) {
-            $value['key'] = $k;
+            if (!array_key_exists('key', $value)) {
+                $value['key'] = $k;
+            }
             $this->insert($value);
         }
     }
