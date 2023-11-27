@@ -4,7 +4,9 @@
 namespace Bx\XHProf;
 
 
+use ArrayIterator;
 use Bx\XHProf\Interfaces\RunInfoInterface;
+use CallbackFilterIterator;
 use SplHeap;
 use SplMaxHeap;
 use SplMinHeap;
@@ -19,7 +21,7 @@ class RunInfo implements RunInfoInterface
     /**
      * @var array
      */
-    private $groupData;
+    private $groupData = [];
     /**
      * @var array
      */
@@ -30,6 +32,11 @@ class RunInfo implements RunInfoInterface
         $this->data = $data;
         $this->description = $description;
         $this->groupData();
+    }
+
+    public function getGroupData(): array
+    {
+       return $this->groupData;
     }
 
     /**
@@ -92,7 +99,7 @@ class RunInfo implements RunInfoInterface
         $this->sum = $allSum;
     }
 
-    public function getData(): ?SplHeap
+    public function getData(): array
     {
         return $this->data;
     }
@@ -115,18 +122,37 @@ class RunInfo implements RunInfoInterface
      * @param string $funcName
      * @return RunInfoInterface|null
      */
-    public function filterByFucName(string $funcName): ?RunInfoInterface
+    public function filterByParentFucName(string $funcName): ?RunInfoInterface
     {
-        $data = new \CallbackFilterIterator(
-            new \ArrayIterator($this->data),
+        $data = new CallbackFilterIterator(
+            new ArrayIterator($this->data),
             function ($value, $key, $iterator) use ($funcName) {
                 [
                     $parent,
                     $current,
                 ] = explode('==>', $key);
 
-                $currentFunc = trim($current ?? $parent);
-                return trim($funcName) === $currentFunc;
+                return trim($funcName) === trim($parent);
+            });
+
+        return new static($data, $this->description);
+    }
+
+    /**
+     * @param string $funcName
+     * @return RunInfoInterface|null
+     */
+    public function filterByChildFucName(string $funcName): ?RunInfoInterface
+    {
+        $data = new CallbackFilterIterator(
+            new ArrayIterator($this->data),
+            function ($value, $key, $iterator) use ($funcName) {
+                [
+                    $parent,
+                    $current,
+                ] = explode('==>', $key);
+
+                return trim($funcName) === trim($current);
             });
 
         return new static($data, $this->description);

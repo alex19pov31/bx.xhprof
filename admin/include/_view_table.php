@@ -15,6 +15,7 @@ use \Bitrix\Main\Localization\Loc;
  * @var string $title
  * @var string $link_url
  * @var string $link_title
+ * @var bool $isFirstInclude
  */
 $oSort = new CAdminSorting($listName, $keySort, $isAscending ? "asc" : 'desc');
 $adminList = new CAdminList($listName, $oSort);
@@ -177,6 +178,13 @@ $adminList->CheckListMode();
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_after.php');
 
 echo "<p><a style=\"text-decoration: none;\" href=\"{$link_url}\">{$link_title}</a></p>";
+
+if ($isFirstInclude) {
+    $url = $request->getRequestedPage() ?: '';
+    $url .= "?run={$runParam}&source={$encodedSourceParam}&func={$symbolParam}&view=graph&lang=" . LANG;
+    echo "<p></p><a href=\"$url\">Посмотреть список вызовов</a></p>";
+    $isFirstInclude = false;
+}
 
 echo "<h3>{$title}</h3>";
 if (!empty($totalData)) {

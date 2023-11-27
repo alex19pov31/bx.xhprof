@@ -1,6 +1,7 @@
 <?php
 $MESS['profile_id'] = 'Идентификатор профайлинга';
 $MESS['source'] = 'Источник';
+$MESS['graph'] = 'Граф выполнения';
 $MESS['date_profiling'] = 'Дата профайлинга';
 $MESS['current_function'] = 'Текущая функция:';
 $MESS['parent_function'] = 'Родительские функции:';

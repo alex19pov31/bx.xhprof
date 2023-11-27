@@ -1,6 +1,7 @@
 <?php
 $MESS['profile_id'] = "Profiling ID";
 $MESS['source'] = "Source";
+$MESS['graph'] = 'Callgraph';
 $MESS['date_profiling'] = "Profiling date";
 $MESS['current_function'] = 'Current function:';
 $MESS['parent_function'] = "Parent functions:";

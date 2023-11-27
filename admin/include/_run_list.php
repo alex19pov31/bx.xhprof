@@ -1,5 +1,6 @@
 <?php
 
+use Bitrix\Main\Context;
 use Bx\XHProf\XHProfManager;
 use Bitrix\Main\HttpRequest;
 use \Bitrix\Main\Localization\Loc;
@@ -30,6 +31,10 @@ switch ($action) {
             $xhprofManager->deleteById($run, $type);
         }
         break;
+    case 'deleteAll':
+        $xhprofManager->deleteAll();
+        $url = Context::getCurrent()->getRequest()->getRequestedPage() ?: '';
+        LocalRedirect("$url?lang=" . LANG);
 }
 
 $adminList->AddHeaders([
@@ -51,6 +56,11 @@ $adminList->AddHeaders([
         'sort'      => 'date',
         'default'   => true,
     ],
+    [
+        'id'        => 'GRAPH',
+        'content'   => Loc::getMessage('graph'),
+        'default'   => true,
+    ],
 ]);
 
 
@@ -60,15 +70,16 @@ foreach ($xhprofManager->getRunsList() as $run) {
      * @var DateTimeImmutable $date
      */
     $date = $run['date'];
-    $link = "?run={$run['run']}&source={$run['source']}&lang=".LANG;
+    $link = "?run={$run['run']}&source={$run['source']}&lang=" . LANG;
+    $graphLink = "?run={$run['run']}&source={$run['source']}&view=graph&lang=" . LANG;
     $decodedSource = base64_decode($run['source']);
 
     $arActions = [
         ["SEPARATOR" => true],
         [
-        "ICON" => "delete",
-        "TEXT" => Loc::getMessage('delete'),
-        "ACTION" => $adminList->ActionDoGroup("{$run['run']}.{$run['source']}", "delete")
+            "ICON" => "delete",
+            "TEXT" => Loc::getMessage('delete'),
+            "ACTION" => $adminList->ActionDoGroup("{$run['run']}.{$run['source']}", "delete")
         ]
     ];
 
@@ -80,8 +91,11 @@ foreach ($xhprofManager->getRunsList() as $run) {
 
     $row->AddActions($arActions);
     $row->AddViewField('RUN_ID', "<a href=\"{$link}\">{$run['run']}</a>");
+    $row->AddViewField('GRAPH', "<a href=\"{$graphLink}\">Посмотреть</a> <a href=\"{$graphLink}\" download>Скачать</a>");
 }
 
 $adminList->CheckListMode();
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_after.php');
+
+echo "<p><a href='?action_button=deleteAll&lang=ru'>Очистить все файлы</a></p>";
 $adminList->DisplayList();

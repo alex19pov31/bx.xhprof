@@ -17,11 +17,8 @@ use \Bitrix\Main\Localization\Loc;
  */
 
 $runInfo = $xhprofManager->getRunById($runParam, $sourceParam);
-//$runInfo = $symbolParam ? $runInfo->filterByFucName($symbolParam) : $runInfo;
-
-//$currentElement = !empty($symbolParam) ? $runInfo->filterByFucName($symbolParam) : null;
-
 $description = $runInfo->getDescription();
+$isFirstInclude = true;
 
 if (!empty($symbolParam)) {
     $sortingTable = $request->getQuery('table_id');
@@ -51,6 +48,7 @@ if (!empty($symbolParam)) {
         require '_view_table.php';
     }
 
+    $runInfo = $runInfo->filterByParentFucName($symbolParam);
     /**
      * @var AscendingData|DescendingData $originalData
      */

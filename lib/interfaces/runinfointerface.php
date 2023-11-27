@@ -26,9 +26,11 @@ interface RunInfoInterface
 
     public function getDescByKeyFromParent(string $key): SplMaxHeap;
 
-    public function filterByFucName(string $funcName): ?RunInfoInterface;
+    public function filterByParentFucName(string $funcName): ?RunInfoInterface;
+    public function filterByChildFucName(string $funcName): ?RunInfoInterface;
 
     public function getDataByFuncName(string $funcName): array;
 
     public function getTotalData(): array;
+    public function getGroupData(): array;
 }

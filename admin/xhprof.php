@@ -20,12 +20,13 @@ $xhprofManager = XHProfManager::instance();
 $runParam = $request->getQuery('run');
 $sourceParam = base64_decode($request->getQuery('source'));
 $symbolParam = $request->getQuery('symbol');
+$viewParam = $request->getQuery('view');
 
 $keySort = $request->getQuery('by') ?? 'ct';
 $isAscending = $request->getQuery('order') === 'asc';
 
 if (!empty($runParam) && !empty($sourceParam)) {
-    require_once 'include/_run_view.php';
+    require_once $viewParam === 'graph' ? 'include/_view_graph.php' : 'include/_run_view.php';
 } else {
     require_once 'include/_run_list.php';
 }

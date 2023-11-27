@@ -7,6 +7,8 @@ namespace Bx\XHProf;
 use Bx\XHProf\Interfaces\CheckerInterface;
 use Bx\XHProf\Interfaces\RunInfoInterface;
 use Bx\XHProf\Interfaces\XHProfMangerInterface;
+use Exception;
+use function PHPUnit\Framework\fileExists;
 
 class XHProfManager implements XHProfMangerInterface
 {
@@ -101,7 +103,7 @@ class XHProfManager implements XHProfMangerInterface
 
     /**
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function getRunsList(): array
     {
@@ -124,5 +126,18 @@ class XHProfManager implements XHProfMangerInterface
     public function deleteById(string $runId, string $type): bool
     {
         return $this->runs->delete($runId, $type);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function deleteAll(): void
+    {
+        foreach ($this->runs->list() as $runData) {
+            $fileName = $runData['file'] ?: '';
+            if (!empty($fileName) && file_exists($fileName)) {
+                unlink($fileName);
+            }
+        }
     }
 }
