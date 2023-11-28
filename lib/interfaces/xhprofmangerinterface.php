@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Bx\XHProf\Interfaces;
-
 
 interface XHProfMangerInterface
 {

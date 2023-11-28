@@ -55,10 +55,10 @@ class XHProfRunsDefault implements XHProfRunsInterface
             $dir = ini_get("xhprof.output_dir");
             if (empty($dir)) {
                 $dir = sys_get_temp_dir();
-                error_log("Warning: Must specify directory location for XHProf runs. ".
+                error_log("Warning: Must specify directory location for XHProf runs. " .
                     "Trying {$dir} as default. You can either pass the " .
-                    "directory location as an argument to the constructor ".
-                    "for XHProfRuns_Default() or set xhprof.output_dir ".
+                    "directory location as an argument to the constructor " .
+                    "for XHProfRuns_Default() or set xhprof.output_dir " .
                     "ini param.");
             }
         }
@@ -76,7 +76,7 @@ class XHProfRunsDefault implements XHProfRunsInterface
         $file_name = $this->fileName($runId, $type);
 
         if (!file_exists($file_name)) {
-            xhprof_error("Could not find file $file_name");
+            error_log("Could not find file $file_name");
             $runDesc = "Invalid Run Id = $runId";
             return null;
         }
@@ -110,7 +110,7 @@ class XHProfRunsDefault implements XHProfRunsInterface
             fwrite($file, $xhprofData);
             fclose($file);
         } else {
-            xhprof_error("Could not open $file_name\n");
+            error_log("Could not open $file_name\n");
         }
 
         return $runId;
@@ -126,7 +126,7 @@ class XHProfRunsDefault implements XHProfRunsInterface
 
         if (is_dir($this->dir)) {
             $files = glob("{$this->dir}/*.{$this->suffix}");
-            usort($files, function($a, $b) {
+            usort($files, function ($a, $b) {
                 return filemtime($b) - filemtime($a);
             });
 
@@ -134,7 +134,7 @@ class XHProfRunsDefault implements XHProfRunsInterface
                 list($run, $source) = explode('.', basename($file));
                 $result[] = [
                     'uid' => htmlentities(basename($file)),
-                    'date' => (new \DateTimeImmutable)->setTimestamp((int)filemtime($file)),
+                    'date' => (new \DateTimeImmutable())->setTimestamp((int)filemtime($file)),
                     'run' => htmlentities($run),
                     'source' => htmlentities($source),
                     'file' => $file,

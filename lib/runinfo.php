@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Bx\XHProf;
-
 
 use ArrayIterator;
 use Bx\XHProf\Interfaces\RunInfoInterface;
@@ -35,7 +33,7 @@ class RunInfo implements RunInfoInterface
 
     public function getGroupData(): array
     {
-       return $this->groupData;
+        return $this->groupData;
     }
 
     /**
@@ -79,9 +77,9 @@ class RunInfo implements RunInfoInterface
                 }
 
 
-                $item["{$k}_p"] = $allSum[$k] > 0 ? (($item[$k]/$allSum[$k]) * 100) : 0;
+                $item["{$k}_p"] = $allSum[$k] > 0 ? (($item[$k] / $allSum[$k]) * 100) : 0;
                 $item["ext_{$k}"] = ($value - $item['child'][$k]) ?? 0;
-                $item["ext_{$k}_p"] = $allSum[$k] > 0 ? (($item["ext_{$k}"]/$allSum[$k]) * 100) : 0;
+                $item["ext_{$k}_p"] = $allSum[$k] > 0 ? (($item["ext_{$k}"] / $allSum[$k]) * 100) : 0;
             }
 
             if (isset($item['child'])) {
@@ -99,7 +97,7 @@ class RunInfo implements RunInfoInterface
             $countCalls = (int) ($item['ct'] ?: 0);
             foreach ($item as $k => $value) {
                 if (in_array($k, $allowAvgKeysCalc)) {
-                    $item["avg_$k"] = $countCalls > 0 ? $value/$countCalls : 0;
+                    $item["avg_$k"] = $countCalls > 0 ? $value / $countCalls : 0;
                 }
             }
         }
@@ -143,7 +141,8 @@ class RunInfo implements RunInfoInterface
                 ] = explode('==>', $key);
 
                 return trim($funcName) === trim($parent);
-            });
+            }
+        );
 
         return new static($data, $this->description);
     }
@@ -163,7 +162,8 @@ class RunInfo implements RunInfoInterface
                 ] = explode('==>', $key);
 
                 return trim($funcName) === trim($current);
-            });
+            }
+        );
 
         return new static($data, $this->description);
     }
@@ -193,13 +193,13 @@ class RunInfo implements RunInfoInterface
         $result = [];
         foreach ($this->data as $item) {
             foreach ($item as $k => $value) {
-                if (!array_key_exists($k, $result)){
+                if (!array_key_exists($k, $result)) {
                     $result[$k] = 0;
                 }
 
                 if ($k === 'ct') {
                     $result[$k] += (int) $value;
-                } else if($value > $result[$k]) {
+                } elseif ($value > $result[$k]) {
                     $result[$k] = $value;
                 }
             }
@@ -222,7 +222,7 @@ class RunInfo implements RunInfoInterface
             foreach ($item as $k => $value) {
                 $value = (int) $value;
                 $totalValue = (int) ($this->groupData[$current][$k] ?? 0);
-                $item["{$k}_p"] = $totalValue > 0 ? (($value/$totalValue) * 100) : 0;
+                $item["{$k}_p"] = $totalValue > 0 ? (($value / $totalValue) * 100) : 0;
             }
             $result[$key] = $item;
         }
@@ -232,7 +232,7 @@ class RunInfo implements RunInfoInterface
             $countCalls = (int) ($item['ct'] ?: 0);
             foreach ($item as $k => $value) {
                 if (in_array($k, $allowAvgKeysCalc)) {
-                    $item["avg_$k"] = $countCalls > 0 ? $value/$countCalls : 0;
+                    $item["avg_$k"] = $countCalls > 0 ? $value / $countCalls : 0;
                 }
             }
         }

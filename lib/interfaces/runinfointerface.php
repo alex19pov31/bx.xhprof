@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Bx\XHProf\Interfaces;
 
 use SplMinHeap;

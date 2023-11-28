@@ -2,7 +2,6 @@
 
 namespace Bx\XHProf;
 
-
 class DefaultChecker extends BaseChecker
 {
     protected function check(): bool

@@ -1,13 +1,12 @@
 <?php
 
-
 namespace Bx\XHProf;
-
 
 use Bx\XHProf\Interfaces\CheckerInterface;
 use Bx\XHProf\Interfaces\RunInfoInterface;
 use Bx\XHProf\Interfaces\XHProfMangerInterface;
 use Exception;
+
 use function PHPUnit\Framework\fileExists;
 
 class XHProfManager implements XHProfMangerInterface
@@ -37,11 +36,13 @@ class XHProfManager implements XHProfMangerInterface
         $this->isProfiling = false;
     }
 
-    private function __clone(){}
+    private function __clone()
+    {
+    }
 
     public static function instance(): XHProfMangerInterface
     {
-        if(static::$instance instanceof XHProfMangerInterface) {
+        if (static::$instance instanceof XHProfMangerInterface) {
             return static::$instance;
         }
 

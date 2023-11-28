@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Bx\XHProf;
-
 
 use Bitrix\Main\Application;
 
