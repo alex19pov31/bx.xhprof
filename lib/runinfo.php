@@ -7,7 +7,6 @@ namespace Bx\XHProf;
 use ArrayIterator;
 use Bx\XHProf\Interfaces\RunInfoInterface;
 use CallbackFilterIterator;
-use SplHeap;
 use SplMaxHeap;
 use SplMinHeap;
 
@@ -186,7 +185,12 @@ class RunInfo implements RunInfoInterface
                 if (!array_key_exists($k, $result)){
                     $result[$k] = 0;
                 }
-                $result[$k] += (int) $value;
+
+                if ($k === 'ct') {
+                    $result[$k] += (int) $value;
+                } else if($value > $result[$k]) {
+                    $result[$k] = $value;
+                }
             }
         }
         return $result;
