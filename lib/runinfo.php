@@ -227,6 +227,17 @@ class RunInfo implements RunInfoInterface
             $result[$key] = $item;
         }
 
+        $allowAvgKeysCalc = ['wt', 'ext_wt', 'cpu', 'ext_cpu', 'mu', 'ext_mu'];
+        foreach ($result as $key => &$item) {
+            $countCalls = (int) ($item['ct'] ?: 0);
+            foreach ($item as $k => $value) {
+                if (in_array($k, $allowAvgKeysCalc)) {
+                    $item["avg_$k"] = $countCalls > 0 ? $value/$countCalls : 0;
+                }
+            }
+        }
+        unset($item);
+
         return $result;
     }
 }
