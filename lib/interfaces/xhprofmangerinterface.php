@@ -44,6 +44,8 @@ interface XHProfMangerInterface
      */
     public function getRunById(string $runId, string $type): RunInfoInterface;
 
+    public function getRunData(string $runId, string $type, string &$description = ''): array;
+
     /**
      * @param string $runId
      * @param string $type

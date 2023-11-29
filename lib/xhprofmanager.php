@@ -119,9 +119,12 @@ class XHProfManager implements XHProfMangerInterface
     public function getRunById(string $runId, string $type): RunInfoInterface
     {
         $description = '';
-        $data = $this->runs->get($runId, $type, $description);
+        return new RunInfo($this->getRunData($runId, $type, $description), $description);
+    }
 
-        return new RunInfo($data, $description);
+    public function getRunData(string $runId, string $type, string &$description = ''): array
+    {
+        return (array) ($this->runs->get($runId, $type, $description) ?: []);
     }
 
     public function deleteById(string $runId, string $type): bool

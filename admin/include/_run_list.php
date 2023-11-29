@@ -1,6 +1,7 @@
 <?php
 
 use Bitrix\Main\Context;
+use Bx\XHProf\DataListHelper;
 use Bx\XHProf\XHProfManager;
 use Bitrix\Main\HttpRequest;
 use \Bitrix\Main\Localization\Loc;
@@ -51,6 +52,24 @@ $adminList->AddHeaders([
         'default'   => true,
     ],
     [
+        'id'        => 'TOTAL_CT',
+        'content'   => Loc::getMessage('calls_count'),
+        'sort'      => 'ct',
+        'default'   => true,
+    ],
+    [
+        'id'        => 'TOTAL_WT',
+        'content'   => Loc::getMessage('all_time_exec'),
+        'sort'      => 'wt',
+        'default'   => true,
+    ],
+    [
+        'id'        => 'TOTAL_MU',
+        'content'   => Loc::getMessage('memory_usage'),
+        'sort'      => 'mu',
+        'default'   => true,
+    ],
+    [
         'id'        => 'DATE',
         'content'   => Loc::getMessage('date_profiling'),
         'sort'      => 'date',
@@ -83,10 +102,15 @@ foreach ($xhprofManager->getRunsList() as $run) {
         ]
     ];
 
+    $data = $xhprofManager->getRunData($run['run'], $decodedSource);
+    $totalData = DataListHelper::getMaxValues($data);
     $row = $adminList->AddRow(false, [
         'RUN_ID' => $run['run'],
         'SOURCE' => $decodedSource,
         'DATE' => $date instanceof DateTimeImmutable ? $date->format('d.m.Y H:i:s') : (string)$date,
+        'TOTAL_CT' => number_format($totalData['ct'], 0, '', ' '),
+        'TOTAL_WT' => number_format($totalData['wt'], 0, '', ' '),
+        'TOTAL_MU' => number_format($totalData['mu'], 0, '', ' '),
     ], $link);
 
     $row->AddActions($arActions);

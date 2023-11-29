@@ -11,6 +11,10 @@ $xhprofRuns = new XHProfRuns_Default();
 $run = $request->getQuery('run');
 $source = $request->getQuery('source');
 $type = $request->getQuery('type') ?: 'png';
+if (!in_array($type, ['png', 'svg', 'jpeg'], true)) {
+    $type = 'png';
+}
+
 $threshold = 0.01;
 $func = $request->getQuery('func') ?: '';
 $critical = true;

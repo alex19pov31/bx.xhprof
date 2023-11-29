@@ -190,21 +190,7 @@ class RunInfo implements RunInfoInterface
 
     public function getTotalData(): array
     {
-        $result = [];
-        foreach ($this->data as $item) {
-            foreach ($item as $k => $value) {
-                if (!array_key_exists($k, $result)) {
-                    $result[$k] = 0;
-                }
-
-                if ($k === 'ct') {
-                    $result[$k] += (int) $value;
-                } elseif ($value > $result[$k]) {
-                    $result[$k] = $value;
-                }
-            }
-        }
-        return $result;
+        return DataListHelper::getMaxValues($this->data);
     }
 
     private function getGroupedDataFromParent(): array
