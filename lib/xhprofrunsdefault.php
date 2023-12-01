@@ -26,13 +26,18 @@ class XHProfRunsDefault implements XHProfRunsInterface
      */
     public function fileName(string $run_id, string $type): string
     {
-        $type = base64_encode($type);
-        $file = "$run_id.$type." . $this->suffix;
-
+        $file = $this->getName($run_id, $type) . $this->suffix;
         if (!empty($this->dir)) {
             $file = $this->dir . "/" . $file;
         }
         return $file;
+    }
+
+    public function getName(string $run_id, string $type): string
+    {
+        $type = substr($type, 0, 15 );
+        $type = base64_encode($type);
+        return "$run_id.$type.";
     }
 
     /**

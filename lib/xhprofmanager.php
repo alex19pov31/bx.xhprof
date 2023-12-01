@@ -29,9 +29,10 @@ class XHProfManager implements XHProfMangerInterface
      */
     private $checker;
 
-    private function __construct()
+    private function __construct(?string $basePath = null)
     {
-        $this->runs = new XHProfRunsDefault();
+        $basePath = $basePath ?: ConfigList::get(ConfigList::BASE_PATH, null);
+        $this->runs = new XHProfRunsDefault($basePath);
         $this->checker = new DefaultChecker();
         $this->isProfiling = false;
     }
@@ -70,9 +71,10 @@ class XHProfManager implements XHProfMangerInterface
     /**
      * @param string $type
      * @param string|null $runId
+     * @param array|null $data
      * @return string
      */
-    public function end(string $type, string $runId = null): string
+    public function end(string $type, string $runId = null, ?array $data = null): string
     {
         if (!$this->isEnable() || !$this->isProfiling) {
             return '';
@@ -82,6 +84,10 @@ class XHProfManager implements XHProfMangerInterface
         $runId = $this->runs->save($xhprofData, $type, $runId);
         $this->isProfiling = false;
 
+        $data = $data ?: [];
+        $data['originalType'] = $type;
+        $fileNameWithInfo = $this->getFilenameWithInfo($runId, $type);
+        $this->saveJsonDataToFile($fileNameWithInfo, $data);
         return (string)$runId;
     }
 
@@ -127,9 +133,71 @@ class XHProfManager implements XHProfMangerInterface
         return (array) ($this->runs->get($runId, $type, $description) ?: []);
     }
 
+    /**
+     * @param string $runId
+     * @param string $type
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public function setInfoByKey(string $runId, string $type, string $key, $value): void
+    {
+        $fileNameWithInfo = $this->getFilenameWithInfo($runId, $type);
+        $data = $this->getJsonDataFromFile($fileNameWithInfo);
+        $data[$key] = $value;
+        $this->saveJsonDataToFile($fileNameWithInfo, $data);
+    }
+
+    public function setAdditionalInfo(string $runId, string $type, array $data): void
+    {
+        $fileNameWithInfo = $this->getFilenameWithInfo($runId, $type);
+        $this->saveJsonDataToFile($fileNameWithInfo, $data);
+    }
+
+    private function saveJsonDataToFile(string $fileName, array $data): void
+    {
+        file_put_contents($fileName, json_encode($data, JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * @param string $runId
+     * @param string $type
+     * @param string $key
+     * @return mixed|null
+     */
+    public function getInfoByKey(string $runId, string $type, string $key)
+    {
+        return $this->getAdditionalInfo($runId, $type)[$key] ?: null;
+    }
+
+    public function getAdditionalInfo(string $runId, string $type): array
+    {
+        $fileNameWithInfo = $this->getFilenameWithInfo($runId, $type);
+        return $this->getJsonDataFromFile($fileNameWithInfo);
+    }
+
+    private function getJsonDataFromFile(string $fileName): array
+    {
+        if (!file_exists($fileName)) {
+            return [];
+        }
+        return json_decode(file_get_contents($fileName), true) ?: [];
+    }
+
     public function deleteById(string $runId, string $type): bool
     {
+        $fileNameWithInfo = $this->getFilenameWithInfo($runId, $type);
+        if (file_exists($fileNameWithInfo)) {
+            unlink($fileNameWithInfo);
+        }
+
         return $this->runs->delete($runId, $type);
+    }
+
+    private function getFilenameWithInfo(string $runId, string $type): string
+    {
+        $fileName = $this->runs->fileName($runId, $type);
+        return str_replace('.xhprof', '.json', $fileName);
     }
 
     /**
@@ -139,8 +207,10 @@ class XHProfManager implements XHProfMangerInterface
     {
         foreach ($this->runs->list() as $runData) {
             $fileName = $runData['file'] ?: '';
+            $fileInfoName =  str_replace('.xhprof', '.json', $fileName);
             if (!empty($fileName) && file_exists($fileName)) {
                 unlink($fileName);
+                unlink($fileInfoName);
             }
         }
     }

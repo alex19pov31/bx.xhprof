@@ -2,6 +2,7 @@
 
 use Bitrix\Main\Context;
 use Bx\XHProf\AscendingData;
+use Bx\XHProf\ConfigList;
 use Bx\XHProf\DataListHelper;
 use Bx\XHProf\DescendingData;
 use Bx\XHProf\XHProfManager;
@@ -40,7 +41,7 @@ switch ($action) {
         LocalRedirect("$url?lang=" . LANG);
 }
 
-$adminList->AddHeaders([
+$headerList = [
     [
         'id'        => 'RUN_ID',
         'content'   => Loc::getMessage('profile_id'),
@@ -87,23 +88,43 @@ $adminList->AddHeaders([
         'content'   => Loc::getMessage('download'),
         'default'   => true,
     ],
-]);
+];
 
+
+$attributeNameList = (array) (ConfigList::get(ConfigList::ATTRIBUTES) ?: []);
+foreach ($attributeNameList as $attributeName) {
+    $headerList[] = [
+        'id' => $attributeName,
+        'content' => $attributeName,
+        'sort' => $attributeName,
+        'default' => true,
+    ];
+}
+
+$adminList->AddHeaders($headerList);
 
 $dataList = [];
 foreach ($xhprofManager->getRunsList() as $run) {
-    $decodedSource = base64_decode($run['source'] ?: '');
+    $decodedSource = base64_decode($run['source']);
     $data = $xhprofManager->getRunData($run['run'] ?: '', $decodedSource);
     $totalData = DataListHelper::getMaxValues($data);
-    $dataList[] = [
+    $itemData = [
         'run' => $run['run'] ?: '',
-        'decodedSource' => $decodedSource,
         'source' => $run['source'] ?: '',
         'date' => $run['date'] ?: null,
         'ct' => $totalData['ct'] ?: 0,
         'wt' => $totalData['wt'] ?: 0,
         'mu' => $totalData['mu'] ?: 0,
     ];
+
+    $additionalInfo = $xhprofManager->getAdditionalInfo($run['run'], $decodedSource);
+    $decodedSource = $xhprofManager->getInfoByKey($run['run'], $decodedSource, 'originalType') ?: $decodedSource;
+    $itemData['decodedSource'] = $decodedSource;
+    foreach ($attributeNameList as $attributeName) {
+        $itemData[$attributeName] = $additionalInfo[$attributeName] ?: '';
+    }
+
+    $dataList[] = $itemData;
 }
 
 $heapData = $isAscending ? new AscendingData($keySort ?: 'run', $dataList) :
@@ -139,6 +160,10 @@ foreach ($heapData as $itemData) {
     $row->AddViewField('RUN_ID', "<a href=\"{$link}\">{$itemData['run']}</a>");
     $row->AddViewField('GRAPH', "<a href=\"{$graphLink}\">Посмотреть</a> <a href=\"{$graphLink}\" download>Скачать</a>");
     $row->AddViewField('FILE', "<a href=\"{$downloadLink}\">Скачать файл xhprof</a>");
+
+    foreach ($attributeNameList as $attributeName) {
+        $row->AddViewField($attributeName, $itemData[$attributeName] ?: '');
+    }
 }
 
 $adminList->CheckListMode();
