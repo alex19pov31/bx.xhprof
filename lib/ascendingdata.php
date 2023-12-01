@@ -30,7 +30,17 @@ class AscendingData extends SplMinHeap
      */
     protected function compare($value1, $value2)
     {
-        return (float)$value2[$this->key] - (float)$value1[$this->key];
+        $aValue = $value1[$this->key] ?? 0;
+        $bValue = $value2[$this->key] ?? 0;
+        if ($bValue < $aValue) {
+            return -1;
+        }
+
+        if ($bValue > $aValue) {
+            return 1;
+        }
+
+        return 0;
     }
 
 

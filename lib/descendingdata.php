@@ -30,7 +30,17 @@ class DescendingData extends SplMaxHeap
      */
     protected function compare($value1, $value2)
     {
-        return (float)$value1[$this->key] - (float)$value2[$this->key];
+        $aValue = $value1[$this->key] ?? 0;
+        $bValue = $value2[$this->key] ?? 0;
+        if ($aValue < $bValue) {
+            return -1;
+        }
+
+        if ($aValue > $bValue) {
+            return 1;
+        }
+
+        return 0;
     }
 
     /**

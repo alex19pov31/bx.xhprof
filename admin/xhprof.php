@@ -26,7 +26,16 @@ $keySort = $request->getQuery('by') ?? 'ct';
 $isAscending = $request->getQuery('order') === 'asc';
 
 if (!empty($runParam) && !empty($sourceParam)) {
-    require_once $viewParam === 'graph' ? 'include/_view_graph.php' : 'include/_run_view.php';
+    switch ($viewParam) {
+        case 'download':
+            require_once 'include/_download_xhprof.php';
+            break;
+        case 'graph':
+            require_once 'include/_view_graph.php';
+            break;
+        default:
+            require_once 'include/_run_view.php';
+    }
 } else {
     require_once 'include/_run_list.php';
 }

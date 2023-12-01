@@ -144,4 +144,9 @@ class XHProfManager implements XHProfMangerInterface
             }
         }
     }
+
+    public function getFilePath(string $runId, string $type): string
+    {
+        return $this->runs->fileName($runId, $type);
+    }
 }

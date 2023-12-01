@@ -1,7 +1,9 @@
 <?php
 
 use Bitrix\Main\Context;
+use Bx\XHProf\AscendingData;
 use Bx\XHProf\DataListHelper;
+use Bx\XHProf\DescendingData;
 use Bx\XHProf\XHProfManager;
 use Bitrix\Main\HttpRequest;
 use \Bitrix\Main\Localization\Loc;
@@ -42,13 +44,13 @@ $adminList->AddHeaders([
     [
         'id'        => 'RUN_ID',
         'content'   => Loc::getMessage('profile_id'),
-        'sort'      => 'run_id',
+        'sort'      => 'run',
         'default'   => true,
     ],
     [
         'id'        => 'SOURCE',
         'content'   => Loc::getMessage('source'),
-        'sort'      => 'source',
+        'sort'      => 'decodedSource',
         'default'   => true,
     ],
     [
@@ -80,42 +82,63 @@ $adminList->AddHeaders([
         'content'   => Loc::getMessage('graph'),
         'default'   => true,
     ],
+    [
+        'id'        => 'FILE',
+        'content'   => Loc::getMessage('download'),
+        'default'   => true,
+    ],
 ]);
 
 
-
+$dataList = [];
 foreach ($xhprofManager->getRunsList() as $run) {
+    $decodedSource = base64_decode($run['source'] ?: '');
+    $data = $xhprofManager->getRunData($run['run'] ?: '', $decodedSource);
+    $totalData = DataListHelper::getMaxValues($data);
+    $dataList[] = [
+        'run' => $run['run'] ?: '',
+        'decodedSource' => $decodedSource,
+        'source' => $run['source'] ?: '',
+        'date' => $run['date'] ?: null,
+        'ct' => $totalData['ct'] ?: 0,
+        'wt' => $totalData['wt'] ?: 0,
+        'mu' => $totalData['mu'] ?: 0,
+    ];
+}
+
+$heapData = $isAscending ? new AscendingData($keySort ?: 'run', $dataList) :
+    new DescendingData($keySort ?: 'run', $dataList);
+
+foreach ($heapData as $itemData) {
     /**
      * @var DateTimeImmutable $date
      */
-    $date = $run['date'];
-    $link = "?run={$run['run']}&source={$run['source']}&lang=" . LANG;
-    $graphLink = "?run={$run['run']}&source={$run['source']}&view=graph&lang=" . LANG;
-    $decodedSource = base64_decode($run['source']);
-
+    $date = $itemData['date'];
+    $link = "?run={$itemData['run']}&source={$itemData['source']}&lang=" . LANG;
+    $graphLink = "?run={$itemData['run']}&source={$itemData['source']}&view=graph&lang=" . LANG;
+    $downloadLink = "?run={$itemData['run']}&source={$itemData['source']}&view=download&lang=" . LANG;
     $arActions = [
         ["SEPARATOR" => true],
         [
             "ICON" => "delete",
             "TEXT" => Loc::getMessage('delete'),
-            "ACTION" => $adminList->ActionDoGroup("{$run['run']}.{$run['source']}", "delete")
+            "ACTION" => $adminList->ActionDoGroup("{$itemData['run']}.{$itemData['source']}", "delete")
         ]
     ];
 
-    $data = $xhprofManager->getRunData($run['run'], $decodedSource);
-    $totalData = DataListHelper::getMaxValues($data);
     $row = $adminList->AddRow(false, [
-        'RUN_ID' => $run['run'],
-        'SOURCE' => $decodedSource,
+        'RUN_ID' => $itemData['run'],
+        'SOURCE' => $itemData['decodedSource'],
         'DATE' => $date instanceof DateTimeImmutable ? $date->format('d.m.Y H:i:s') : (string)$date,
-        'TOTAL_CT' => number_format($totalData['ct'], 0, '', ' '),
-        'TOTAL_WT' => number_format($totalData['wt'], 0, '', ' '),
-        'TOTAL_MU' => number_format($totalData['mu'], 0, '', ' '),
+        'TOTAL_CT' => number_format($itemData['ct'], 0, '', ' '),
+        'TOTAL_WT' => number_format($itemData['wt'], 0, '', ' '),
+        'TOTAL_MU' => number_format($itemData['mu'], 0, '', ' '),
     ], $link);
 
     $row->AddActions($arActions);
-    $row->AddViewField('RUN_ID', "<a href=\"{$link}\">{$run['run']}</a>");
+    $row->AddViewField('RUN_ID', "<a href=\"{$link}\">{$itemData['run']}</a>");
     $row->AddViewField('GRAPH', "<a href=\"{$graphLink}\">Посмотреть</a> <a href=\"{$graphLink}\" download>Скачать</a>");
+    $row->AddViewField('FILE', "<a href=\"{$downloadLink}\">Скачать файл xhprof</a>");
 }
 
 $adminList->CheckListMode();

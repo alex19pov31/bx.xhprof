@@ -3,17 +3,13 @@
 namespace Bx\XHProf;
 
 use Bx\XHProf\Interfaces\XHProfRunsInterface;
+use DateTimeImmutable;
+use Exception;
 
 class XHProfRunsDefault implements XHProfRunsInterface
 {
-    /**
-     * @var string
-     */
-    private $dir;
-    /**
-     * @var string
-     */
-    private $suffix = 'xhprof';
+    private string $dir;
+    private string $suffix = 'xhprof';
 
     /**
      * @return string
@@ -24,11 +20,11 @@ class XHProfRunsDefault implements XHProfRunsInterface
     }
 
     /**
-     * @param $run_id
-     * @param $type
+     * @param string $run_id
+     * @param string $type
      * @return string
      */
-    private function fileName($run_id, $type): string
+    public function fileName(string $run_id, string $type): string
     {
         $type = base64_encode($type);
         $file = "$run_id.$type." . $this->suffix;
@@ -43,7 +39,7 @@ class XHProfRunsDefault implements XHProfRunsInterface
      * XHProfRunsDefault constructor.
      * @param string|null $dir
      */
-    public function __construct($dir = null)
+    public function __construct(?string $dir = null)
     {
 
         // if user hasn't passed a directory location,
@@ -66,9 +62,9 @@ class XHProfRunsDefault implements XHProfRunsInterface
     }
 
     /**
-     * @param $runId
-     * @param $type
-     * @param $runDesc
+     * @param string $runId
+     * @param string $type
+     * @param string $runDesc
      * @return mixed|null
      */
     public function get($runId, $type, &$runDesc)
@@ -87,9 +83,9 @@ class XHProfRunsDefault implements XHProfRunsInterface
     }
 
     /**
-     * @param $xhprofData
-     * @param $type
-     * @param null $runId
+     * @param string $xhprofData
+     * @param string $type
+     * @param string|null $runId
      * @return string|null
      */
     public function save($xhprofData, $type, $runId = null): ?string
@@ -118,7 +114,7 @@ class XHProfRunsDefault implements XHProfRunsInterface
 
     /**
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function list(): array
     {
@@ -134,7 +130,7 @@ class XHProfRunsDefault implements XHProfRunsInterface
                 list($run, $source) = explode('.', basename($file));
                 $result[] = [
                     'uid' => htmlentities(basename($file)),
-                    'date' => (new \DateTimeImmutable())->setTimestamp((int)filemtime($file)),
+                    'date' => (new DateTimeImmutable())->setTimestamp((int)filemtime($file)),
                     'run' => htmlentities($run),
                     'source' => htmlentities($source),
                     'file' => $file,
@@ -143,11 +139,13 @@ class XHProfRunsDefault implements XHProfRunsInterface
 
             return $result;
         }
+
+        return $result;
     }
 
     /**
-     * @param $runId
-     * @param $type
+     * @param string $runId
+     * @param string $type
      * @return bool
      */
     public function delete($runId, $type): bool

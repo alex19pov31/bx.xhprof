@@ -24,7 +24,7 @@ $adminList->AddHeaders([
     [
         'id' => 'FUNC_NAME',
         'content' => Loc::getMessage('name_function'),
-        'sort' => 'func_name',
+        'sort' => 'key',
         'default' => true,
     ],
     [

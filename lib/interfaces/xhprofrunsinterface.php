@@ -16,6 +16,8 @@ interface XHProfRunsInterface
      */
     public function get($runId, $type, &$runDesc);
 
+    public function fileName(string $run_id, string $type): string;
+
     /**
      * Save XHProf data for a profiler run of specified type
      * ($type).
