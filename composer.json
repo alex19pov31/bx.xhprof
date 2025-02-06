@@ -1,0 +1,15 @@
+{
+    "name": "alex19pov31/bx.xhprof",
+    "description": "Xhprof for bitrix",
+    "type": "bitrix-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Nesterov",
+            "email": "alex19pov31@gmail.com"
+        }
+    ],
+    "autoload": {
+        "classmap": ["lib/"]
+    }
+}

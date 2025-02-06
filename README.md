@@ -1,5 +1,11 @@
 # XHprof for bitrix
 
+Установка:
+
+```shell
+composer require alex19pov31/bx.xhprof
+```
+
 Примеры использования:
 
 ```php
